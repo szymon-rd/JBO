@@ -8,6 +8,6 @@ import rx.Observable;
  *         Created 2016-02-22 at 19
  */
 public abstract class Work {
-    public abstract Observable<Report> getReports();
+    public abstract Observable<Reportable> getReports();
     public abstract String getWorkName();
 }

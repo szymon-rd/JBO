@@ -4,9 +4,22 @@ import java.io.InputStream;
 
 /**
  * @author Jaca777
- *         Created 2016-02-22 at 19
+ *         Created 2016-02-26 at 21
  */
-public interface JavaClass {
-    String getPath();
-    InputStream getClassData();
+public class JavaClass {
+    private String name;
+    private InputStream classData;
+
+    public JavaClass(String name, InputStream classData) {
+        this.name = name;
+        this.classData = classData;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public InputStream getClassData() {
+        return classData;
+    }
 }

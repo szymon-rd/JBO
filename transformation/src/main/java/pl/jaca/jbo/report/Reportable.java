@@ -4,6 +4,7 @@ package pl.jaca.jbo.report;
  * @author Jaca777
  *         Created 2016-02-24 at 22
  */
-public abstract class Report {
-    public abstract String getMessage();
+public interface Reportable {
+    String getTag();
+    String getMessage();
 }

@@ -1,5 +1,6 @@
 package pl.jaca.jbo.transform;
 
+import java.io.InputStream;
 import java.util.stream.Stream;
 
 /**
@@ -7,5 +8,5 @@ import java.util.stream.Stream;
  *         Created 2016-02-22 at 19
  */
 public interface JavaProject {
-    Stream<JavaClass> getClasses();
+    Stream<JavaClass> getClassesData();
 }
