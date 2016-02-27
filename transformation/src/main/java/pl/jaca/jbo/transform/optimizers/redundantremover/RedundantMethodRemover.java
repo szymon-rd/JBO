@@ -35,7 +35,7 @@ public class RedundantMethodRemover implements Transformer {
         Transformation transformation = new Transformation("Redundant methods removal.");
         try {
             List<ClassNode> classes = readProject(project, transformation);
-            Set<String> methods = resolveMethods(classes, transformation);
+            List<ClassNode> transformedClasses = removeRedundant(classes, transformation);
 
         } catch (InterruptedException e) {
             transformation.fail(e);
@@ -43,7 +43,7 @@ public class RedundantMethodRemover implements Transformer {
         return transformation;
     }
 
-    private Set<String> resolveMethods(List<ClassNode> classes, Transformation transformation) {
+    private Set<String> removeRedundant(List<ClassNode> classes, Transformation transformation) {
         List<Callable<ClassNode>> removerTasks = classes.stream()
                 .map(node -> transformation.reported(new CallableRedundantRemover(node), node.name, CallableRedundantRemover.RESOLVING_TRANSFORM))
                 .collect(Collectors.toList());
