@@ -43,10 +43,17 @@ public class MethodsResolver extends ClassVisitor {
         publicMethods.forEach(this::deleteCalls);
     }
 
-    private void deleteCalls(String caller) {
-        for (String method : calls.get(caller)) {
-            privateMethods.remove(method);
-            deleteCalls(method);
+    private void deleteCalls(String publicMethod) {
+        Stack<String> callers = new Stack<>();
+        callers.push(publicMethod);
+        while (!callers.isEmpty()) {
+            String caller = callers.pop();
+            for (String call : calls.get(caller)) {
+                if (privateMethods.contains(call)) {
+                    privateMethods.remove(call);
+                    callers.push(call);
+                }
+            }
         }
     }
 

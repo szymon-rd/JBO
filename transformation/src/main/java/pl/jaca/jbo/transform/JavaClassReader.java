@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  *         Created 2016-02-26 at 20
  */
 public class JavaClassReader implements Callable<ClassNode> {
-    public static final String READ_TRANSFORM = "Class read";
+    public static final String READ_TASK = "Reading class";
     private InputStream classData;
 
     public JavaClassReader(InputStream classData) {

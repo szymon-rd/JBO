@@ -7,6 +7,8 @@ import pl.jaca.jbo.util.FutureUtil;
 import rx.Observable;
 import rx.Observer;
 import rx.subjects.AsyncSubject;
+import rx.subjects.PublishSubject;
+import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +21,7 @@ import java.util.concurrent.FutureTask;
  */
 public class Transformation extends Work implements Reporter {
     private String name;
-    private Subject<Reportable, Reportable> reportSubject = AsyncSubject.create();
+    private Subject<Reportable, Reportable> reportSubject = ReplaySubject.create();
     private CompletableFuture<JavaProject> result = new CompletableFuture<>();
 
     public Transformation(String name) {
@@ -40,14 +42,13 @@ public class Transformation extends Work implements Reporter {
         reportSubject.onError(e);
     }
 
-    public void complete(JavaProject resultProject) {
-        result.complete(resultProject);
+    public void complete() {
         reportSubject.onCompleted();
     }
 
     @Override
     public Observable<Reportable> getReports() {
-        return reportSubject.asObservable();
+        return reportSubject;
     }
 
     @Override

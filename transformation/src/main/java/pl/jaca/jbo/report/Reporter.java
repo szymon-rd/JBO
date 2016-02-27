@@ -25,4 +25,6 @@ public interface Reporter {
     }
 
     void fail(Throwable e);
+
+    void complete();
 }

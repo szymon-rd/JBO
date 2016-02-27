@@ -11,4 +11,8 @@ public abstract class TaskReport implements Reportable {
     public String getTag() {
         return TAG;
     }
+
+    public abstract String getTaskName();
+
+    public abstract String getTarget();
 }

@@ -15,7 +15,12 @@ public class TransformationReport extends TaskReport {
     }
 
     @Override
-    public String getMessage() {
-        return "Transformed " + target + " - " + transformation;
+    public String getTaskName() {
+        return transformation;
+    }
+
+    @Override
+    public String getTarget() {
+        return target;
     }
 }

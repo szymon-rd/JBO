@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  *         Created 2016-02-27 at 10
  */
 public class JavaClassWriter implements Callable<JavaClass> {
-    public static final String WRITE_TRANSFORM = "Class written";
+    public static final String WRITE_TASK = "Writing class";
     private ClassNode classNode;
 
     public JavaClassWriter(ClassNode classNode) {

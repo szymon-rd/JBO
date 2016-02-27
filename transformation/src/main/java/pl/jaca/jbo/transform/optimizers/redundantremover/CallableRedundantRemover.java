@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
  */
 public class CallableRedundantRemover implements Callable<ClassNode> {
 
-    public static final String RESOLVING_TRANSFORM = "Redundant methods removed";
+    public static final String REMOVE_TASK = "Removing redundant methods";
 
     private MethodsResolver classVisitor;
     private ClassNode classNode;

@@ -25,8 +25,9 @@ public class RedundantMethodRemover implements Transformer {
         try {
             List<ClassNode> classes = readProject(project, transformation);
             List<ClassNode> transformedClasses = removeRedundant(classes, transformation);
-            JavaProject transformedProject = createProject(transformedClasses, transformation);
-            transformation.complete(transformedProject);
+            List<JavaClass> transformedJavaClasses = writeClasses(transformedClasses, transformation);
+            transformedJavaClasses.forEach(project::putClass);
+            transformation.complete();
         } catch (InterruptedException e) {
             transformation.fail(e);
         }
@@ -35,28 +36,27 @@ public class RedundantMethodRemover implements Transformer {
 
     private List<ClassNode> removeRedundant(List<ClassNode> classes, Transformation transformation) throws InterruptedException {
         List<Callable<ClassNode>> removerTasks = classes.stream()
-                .map(node -> transformation.reported(new CallableRedundantRemover(node), node.name, CallableRedundantRemover.RESOLVING_TRANSFORM))
+                .map(node -> transformation.reported(new CallableRedundantRemover(node), node.name, CallableRedundantRemover.REMOVE_TASK))
                 .collect(Collectors.toList());
-        return invokeAndAwait(transformation, removerTasks);
+        return invokeAndAwait(transformation, removerTasks, CallableRedundantRemover.REMOVE_TASK);
     }
 
     private List<ClassNode> readProject(JavaProject project, Transformation transformation) throws InterruptedException {
         List<Callable<ClassNode>> readerTasks = project.getClassesData()
-                .map(c -> transformation.reported(new JavaClassReader(c.getClassData()), c.getName(), JavaClassReader.READ_TRANSFORM))
+                .map(c -> transformation.reported(new JavaClassReader(c.getClassData()), c.getName(), JavaClassReader.READ_TASK))
                 .collect(Collectors.toList());
-        return invokeAndAwait(transformation, readerTasks);
+        return invokeAndAwait(transformation, readerTasks, JavaClassReader.READ_TASK);
     }
 
-    private JavaProject createProject(List<ClassNode> classes, Transformation transformation) throws InterruptedException {
+    private List<JavaClass> writeClasses(List<ClassNode> classes, Transformation transformation) throws InterruptedException {
         List<Callable<JavaClass>> writerTasks = classes.stream()
-                .map(c -> transformation.reported(new JavaClassWriter(c), c.name, JavaClassWriter.WRITE_TRANSFORM))
+                .map(c -> transformation.reported(new JavaClassWriter(c), c.name, JavaClassWriter.WRITE_TASK))
                 .collect(Collectors.toList());
-        List<JavaClass> javaClasses = invokeAndAwait(transformation, writerTasks);
-        return new CompleteJavaProject(javaClasses);
+        return invokeAndAwait(transformation, writerTasks, JavaClassWriter.WRITE_TASK);
     }
 
-    private <T> List<T> invokeAndAwait(Transformation transformation, List<Callable<T>> removerTasks) throws InterruptedException {
-        transformation.reportScheduling(removerTasks.size(), CallableRedundantRemover.RESOLVING_TRANSFORM);
+    private <T> List<T> invokeAndAwait(Transformation transformation, List<Callable<T>> removerTasks, String taskName) throws InterruptedException {
+        transformation.reportScheduling(removerTasks.size(), taskName);
         return executorService.invokeAll(removerTasks).stream()
                 .map(FutureUtil::uncheckedGet)
                 .collect(Collectors.toList());

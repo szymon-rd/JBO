@@ -8,22 +8,20 @@ import pl.jaca.jbo.report.SchedulingReport;
  */
 public class TransformationSchedulingReport extends SchedulingReport {
     private int tasks;
-    private String transfromation;
+    private String transformation;
 
     public TransformationSchedulingReport(int tasks, String transformation) {
         this.tasks = tasks;
-        this.transfromation = transformation;
-    }
-
-    @Override
-    public String getMessage() {
-        //TODO
-        throw new UnsupportedOperationException();
+        this.transformation = transformation;
     }
 
     @Override
     public int getTaskCount() {
-        //TODO
-        throw new UnsupportedOperationException();
+        return tasks;
+    }
+
+    @Override
+    public String getTaskName() {
+        return transformation;
     }
 }

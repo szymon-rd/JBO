@@ -6,5 +6,4 @@ package pl.jaca.jbo.report;
  */
 public interface Reportable {
     String getTag();
-    String getMessage();
 }

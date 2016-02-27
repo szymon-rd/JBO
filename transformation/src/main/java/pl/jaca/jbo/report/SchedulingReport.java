@@ -14,4 +14,6 @@ public abstract class SchedulingReport implements Reportable {
     }
 
     public abstract int getTaskCount();
+
+    public abstract String getTaskName();
 }
