@@ -15,23 +15,25 @@ import java.util.concurrent.Callable;
  * @author Jaca777
  *         Created 2016-02-26 at 18
  */
-public class CallableMethodsResolver implements Callable<MethodsResolver> {
+public class CallableRedundantRemover implements Callable<ClassNode> {
+
+    public static final String RESOLVING_TRANSFORM = "Redundant methods removed";
 
     private MethodsResolver classVisitor;
     private ClassNode classNode;
-    private Reporter reporter;
 
-    public CallableMethodsResolver(ClassNode classNode, Reporter reporter) {
+    public CallableRedundantRemover(ClassNode classNode) {
         this.classNode = classNode;
         this.classVisitor = new MethodsResolver(Opcodes.ASM5);
     }
 
     @Override
-    public MethodsResolver call() throws Exception {
+    public ClassNode call() throws Exception {
         classNode.accept(classVisitor);
-        TransformationReport report = new TransformationReport(classNode.name, RedundantMethodRemover.RESOLVING_TRANSFORM);
-        reporter.report(report);
-        return classVisitor;
+        Set<String> redundantMethods = this.classVisitor.getRedundantMethods();
+        MethodsRemover methodsRemover = new MethodsRemover(Opcodes.ASM5, redundantMethods);
+        classNode.accept(methodsRemover);
+        return methodsRemover;
     }
 
 

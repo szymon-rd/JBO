@@ -27,7 +27,6 @@ import java.util.stream.Stream;
  */
 public class RedundantMethodRemover implements Transformer {
 
-    public static final String RESOLVING_TRANSFORM = "Private methods optimized.";
 
     private ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 8);
 
@@ -36,15 +35,18 @@ public class RedundantMethodRemover implements Transformer {
         Transformation transformation = new Transformation("Redundant methods removal.");
         try {
             List<ClassNode> classes = readProject(project, transformation);
-            Set<String> methods = resolveMethods(classes);
+            Set<String> methods = resolveMethods(classes, transformation);
+
         } catch (InterruptedException e) {
             transformation.fail(e);
         }
         return transformation;
     }
 
-    private Set<String> resolveMethods(List<ClassNode> classes) {
-        int a = 2 + 3;
+    private Set<String> resolveMethods(List<ClassNode> classes, Transformation transformation) {
+        List<Callable<ClassNode>> removerTasks = classes.stream()
+                .map(node -> transformation.reported(new CallableRedundantRemover(node), node.name, CallableRedundantRemover.RESOLVING_TRANSFORM))
+                .collect(Collectors.toList());
         return null;
     }
 
