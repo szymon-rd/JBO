@@ -1,13 +1,9 @@
 package pl.jaca.jbo.transform.optimizers.redundantremover;
 
-import org.objectweb.asm.ClassReader;
+
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import pl.jaca.jbo.report.Reporter;
-import pl.jaca.jbo.transform.TransformationReport;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Set;
 import java.util.concurrent.Callable;
 

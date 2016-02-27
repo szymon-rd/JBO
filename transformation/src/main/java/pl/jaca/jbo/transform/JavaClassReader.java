@@ -26,7 +26,6 @@ public class JavaClassReader implements Callable<ClassNode> {
         org.objectweb.asm.tree.ClassNode node = new org.objectweb.asm.tree.ClassNode(Opcodes.ASM5);
         ClassReader reader = new ClassReader(classData);
         reader.accept(node, 0);
-        TransformationReport report = new TransformationReport(node.name, READ_TRANSFORM);
         return node;
     }
 
