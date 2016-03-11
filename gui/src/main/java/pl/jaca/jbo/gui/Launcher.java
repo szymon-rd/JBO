@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import pl.jaca.jbo.report.Reportable;
 import pl.jaca.jbo.report.SchedulingReport;
 import pl.jaca.jbo.report.TaskReport;
+import pl.jaca.jbo.transform.JarFileWriter;
 import pl.jaca.jbo.transform.JavaProject;
 import pl.jaca.jbo.transform.Transformation;
 import pl.jaca.jbo.transform.optimizers.redundantremover.RedundantMethodRemover;
 import pl.jaca.jbo.transform.ProjectJarFile;
 import rx.Observer;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,9 +32,20 @@ public class Launcher {
         log.info("Enter project path: ");
         String projectPath = input.next();
         RedundantMethodRemover r = new RedundantMethodRemover();
-        JavaProject project = new ProjectJarFile(projectPath);
+        ProjectJarFile project = new ProjectJarFile(projectPath);
         Transformation t = r.transform(project);
         t.getReports().subscribe(new ConsoleOutput());
+        t.getReports().subscribe(i -> {}, i -> {}, () -> {
+            log.info("Enter output path: ");
+            String outPath = input.next();
+            JarFileWriter writer = new JarFileWriter(project);
+            try {
+                writer.write(new File(outPath));
+                log.info("Project saved!");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private static class ConsoleOutput implements Observer<Reportable> {
@@ -54,8 +67,8 @@ public class Launcher {
             switch (reportable.getTag()) {
                 case SchedulingReport.TAG:
                     SchedulingReport schedulingReport = (SchedulingReport) reportable;
-                    log.info("Scheduled new task: " + schedulingReport.getTaskName());
                     int tasks = schedulingReport.getTaskCount();
+                    log.info("Scheduled new " + tasks + " tasks: " + schedulingReport.getTaskName());
                     works.put(schedulingReport.getTaskName(), new Work(tasks));
                     break;
                 case TaskReport.TAG:

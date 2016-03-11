@@ -24,5 +24,6 @@ public class MethodsRemover extends ClassNode {
         if (!redundantMethods.contains(identifier))
             return super.visitMethod(access, name, desc, signature, exceptions);
         else return null;
+
     }
 }

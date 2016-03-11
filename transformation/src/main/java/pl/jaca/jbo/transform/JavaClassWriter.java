@@ -23,7 +23,7 @@ public class JavaClassWriter implements Callable<JavaClass> {
 
     @Override
     public JavaClass call() throws Exception {
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(writer);
         return new JavaClass(classNode.name, new ByteArrayInputStream(writer.toByteArray()));
     }

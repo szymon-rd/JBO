@@ -20,42 +20,17 @@ public class ProjectJarFile implements JavaProject {
     private List<JavaClass> classes;
     private JarFile jarFile;
 
-    private ProjectJarFile(List<JavaClass> classes) {
+    private ProjectJarFile(JarFile jarFile, List<JavaClass> classes) {
         this.classes = classes;
+        this.jarFile = jarFile;
     }
 
     public ProjectJarFile(JarFile file) throws IOException {
-        this(read(file));
+        this(file, read(file));
     }
 
     public ProjectJarFile(String path) throws IOException {
         this(new JarFile(path));
-    }
-
-
-    /**
-     * Writes this java project to file with applied modifications.
-     *
-     * @param file
-     * @throws IOException
-     */
-    public void write(File file) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
-        Enumeration<JarEntry> entries = this.jarFile.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            if (!entry.isDirectory() && !isClass(entry)) {
-                jarOutputStream.putNextEntry(entry);
-                InputStream inputStream = this.jarFile.getInputStream(entry);
-                ByteStreams.copy(inputStream, jarOutputStream);
-            }
-        }
-        for (JavaClass javaClass : this.classes) {
-            ZipEntry entry = new ZipEntry(javaClass.getName() + ".class");
-            jarOutputStream.putNextEntry(entry);
-            ByteStreams.copy(javaClass.getClassData(), jarOutputStream);
-        }
     }
 
 
@@ -68,6 +43,10 @@ public class ProjectJarFile implements JavaProject {
     public void putClass(JavaClass javaClass) {
         classes.removeIf(c -> c.getName().equals(javaClass.getName()));
         classes.add(javaClass);
+    }
+
+    public JarFile getJarFile() {
+        return jarFile;
     }
 
     private static List<JavaClass> read(JarFile jar) throws IOException {
