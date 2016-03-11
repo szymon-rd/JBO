@@ -63,7 +63,7 @@ public class Launcher {
         }
 
         @Override
-        public void onNext(Reportable reportable) {
+        public synchronized void onNext(Reportable reportable) {
             switch (reportable.getTag()) {
                 case SchedulingReport.TAG:
                     SchedulingReport schedulingReport = (SchedulingReport) reportable;
