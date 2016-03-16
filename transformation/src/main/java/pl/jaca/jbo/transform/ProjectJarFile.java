@@ -1,16 +1,10 @@
 package pl.jaca.jbo.transform;
 
-import com.google.common.io.ByteStreams;
-import pl.jaca.jbo.transform.JavaClass;
-import pl.jaca.jbo.transform.JavaProject;
-
 import java.io.*;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
 
 /**
  * @author Jaca777
@@ -52,14 +46,16 @@ public class ProjectJarFile implements JavaProject {
     private static List<JavaClass> read(JarFile jar) throws IOException {
         List<JavaClass> classes = new ArrayList<>();
         Enumeration<JarEntry> entries = jar.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            if (!entry.isDirectory() && isClass(entry)) {
-                String className = entry.getName().replace(".class", "");
-                classes.add(new JavaClass(className, jar.getInputStream(entry)));
-            }
-        }
+        while (entries.hasMoreElements())
+            readEntry(classes, jar, entries.nextElement());
         return classes;
+    }
+
+    private static void readEntry(List<JavaClass> dest, JarFile jar, JarEntry entry) throws IOException {
+        if (!entry.isDirectory() && isClass(entry)) {
+            String className = entry.getName().replace(".class", "");
+            dest.add(new JavaClass(className, jar.getInputStream(entry)));
+        }
     }
 
     private static boolean isClass(JarEntry entry) {

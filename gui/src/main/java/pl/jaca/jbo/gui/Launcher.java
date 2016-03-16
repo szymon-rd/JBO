@@ -22,6 +22,7 @@ import java.util.Scanner;
 /**
  * @author Jaca777
  *         Created 2016-02-27 at 10
+ *         Test class
  */
 public class Launcher {
     private static Logger log = LoggerFactory.getLogger("JBO");

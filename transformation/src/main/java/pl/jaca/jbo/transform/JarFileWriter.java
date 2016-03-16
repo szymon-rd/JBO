@@ -35,24 +35,31 @@ public class JarFileWriter {
         Enumeration<JarEntry> entries = this.jarFile.getJarFile().entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
-            if (!entry.isDirectory() && !isClass(entry)) {
-                jarOutputStream.putNextEntry(entry);
-                InputStream inputStream = this.jarFile.getJarFile().getInputStream(entry);
-                ByteStreams.copy(inputStream, jarOutputStream);
-            }
+            if (!entry.isDirectory() && !isClass(entry))
+                writeEntry(jarOutputStream, entry);
         }
-        this.jarFile.getClassesData().forEach(javaClass -> {
-            ZipEntry entry = new ZipEntry(javaClass.getName() + ".class");
-            try {
-                jarOutputStream.putNextEntry(entry);
-                ByteStreams.copy(javaClass.getClassData(), jarOutputStream);
-                jarOutputStream.closeEntry();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        this.jarFile.getClassesData().forEach(javaClass -> writeClass(jarOutputStream, javaClass));
         jarOutputStream.close();
 
+    }
+
+    private void writeEntry(JarOutputStream jarOutputStream, JarEntry entry) throws IOException {
+            jarOutputStream.putNextEntry(entry);
+            InputStream inputStream = this.jarFile.getJarFile().getInputStream(entry);
+            ByteStreams.copy(inputStream, jarOutputStream);
+            jarOutputStream.closeEntry();
+
+    }
+
+    private void writeClass(JarOutputStream jarOutputStream, JavaClass javaClass) {
+        ZipEntry entry = new ZipEntry(javaClass.getName() + ".class");
+        try {
+            jarOutputStream.putNextEntry(entry);
+            ByteStreams.copy(javaClass.getClassData(), jarOutputStream);
+            jarOutputStream.closeEntry();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static boolean isClass(JarEntry entry) {
